@@ -1,0 +1,119 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Go Mailing API",
+    "version": "1.0",
+    "contact": {
+      "name": "Ali.G",
+      "url": "https://github.com/Ali-Gorgani",
+      "email": "maniwolf600@gmail.com"
+    }
+  },
+  "paths": {
+    "/get_providers": {
+      "get": {
+        "summary": "Get email providers",
+        "description": "API to retrieve a list of available email providers.",
+        "operationId": "GoMailing_GetProviders",
+        "responses": {
+          "200": {
+            "description": "Providers retrieved successfully.",
+            "schema": {
+              "$ref": "#/definitions/GetProvidersResponse"
+            }
+          },
+          "default": {
+            "description": "An error occurred.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": ["GoMailing"]
+      }
+    },
+
+    "/send_mail": {
+      "post": {
+        "summary": "Send an email",
+        "description": "API to send an email using the configured provider.",
+        "operationId": "GoMailing_SendEmail",
+        "responses": {
+          "200": {
+            "description": "Email sent successfully.",
+            "schema": {
+              "$ref": "#/definitions/SendEmailResponse"
+            }
+          },
+          "default": {
+            "description": "An error occurred.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SendEmailRequest"
+            }
+          }
+        ],
+        "tags": ["GoMailing"]
+      }
+    }
+  },
+
+  "definitions": {
+    "GetProvidersResponse": {
+      "type": "object",
+      "properties": {
+        "providers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SendEmailRequest": {
+      "type": "object",
+      "properties": {
+        "provider": {
+          "type": "string"
+        },
+        "receptor": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "SendEmailResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
