@@ -7,10 +7,12 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
 type UserController struct {
 	UserService *models.UserService
+	Log         *logrus.Logger
 }
 
 type SignUpRequest struct {
@@ -29,6 +31,7 @@ type SignUpResponse struct {
 func (controller *UserController) SignUp(ctx echo.Context) error {
 	request := new(SignUpRequest)
 	if err := ctx.Bind(request); err != nil {
+		controller.Log.Errorf("SignUp: %v", err)
 		return ctx.String(http.StatusBadRequest, "Invalid query parameters")
 	}
 
@@ -42,8 +45,10 @@ func (controller *UserController) SignUp(ctx echo.Context) error {
 	user, err := controller.UserService.CreateUser(userParam)
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+			controller.Log.Errorf("SignUp: %v", err)
 			return ctx.String(http.StatusConflict, "Username or email already exists")
 		}
+		controller.Log.Errorf("SignUp: %v", err)
 		return ctx.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	rsp := SignUpResponse{
@@ -69,6 +74,7 @@ func (controller *UserController) SignIn(ctx echo.Context) error {
 	request := new(SignInRequest)
 	err := ctx.Bind(&request)
 	if err != nil {
+		controller.Log.Errorf("SignIn: %v", err)
 		return ctx.String(http.StatusBadRequest, "Invalid query parameters")
 	}
 
@@ -81,8 +87,10 @@ func (controller *UserController) SignIn(ctx echo.Context) error {
 	user, err := controller.UserService.SignIn(signinParam)
 	if err != nil {
 		if strings.Contains(err.Error(), "no rows in result set") {
+			controller.Log.Errorf("SignIn: %v", err)
 			return ctx.String(http.StatusUnauthorized, "Unauthorized")
 		}
+		controller.Log.Errorf("SignIn: %v", err)
 		return ctx.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 

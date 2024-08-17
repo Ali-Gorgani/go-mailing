@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"go-mailing/internal/app/logging"
+	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -9,7 +9,7 @@ import (
 func HashPassword(password string) (string, error) {
 	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", logging.LogAndReturnError("Failed to hash password", err)
+		return "", fmt.Errorf("hash password: %w", err)
 	}
 	return string(hashedBytes), nil
 }

@@ -1,7 +1,7 @@
 package migration
 
 import (
-	"go-mailing/internal/app/logging"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -22,7 +22,7 @@ func LoadMigrationsFromDir(dirPath string) error {
 
 	err := filepath.Walk(dirPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			return logging.LogAndReturnError("Error while walking through the directory", err)
+			return fmt.Errorf("load migrations from dir: %w", err)
 		}
 
 		// Process only files with .sql extension
@@ -32,14 +32,13 @@ func LoadMigrationsFromDir(dirPath string) error {
 
 			// Skip if migration ID is already loaded
 			if _, exists := loadedMigrations[id]; exists {
-				log.Warnf("Skipping duplicate migration ID: %s", id)
-				return nil
+				return fmt.Errorf("load migrations from dir: duplicate migration ID: %s", id)
 			}
 
 			// Load migration from the file
 			err := LoadMigrationFromFile(path, id)
 			if err != nil {
-				return logging.LogAndReturnError("Could not load migrations", err)
+				return fmt.Errorf("load migrations from dir: %w", err)
 			}
 
 			// Mark this migration ID as loaded
@@ -49,7 +48,7 @@ func LoadMigrationsFromDir(dirPath string) error {
 	})
 
 	if err != nil {
-		return logging.LogAndReturnError("Could not load migrations", err)
+		return fmt.Errorf("load migrations from dir: %w", err)
 	}
 
 	return nil
@@ -59,19 +58,19 @@ func LoadMigrationsFromDir(dirPath string) error {
 func LoadMigrationFromFile(filePath, id string) error {
 	file, err := os.Open(filePath)
 	if err != nil {
-		return logging.LogAndReturnError("Could not open the file", err)
+		return fmt.Errorf("load migration from file: %w", err)
 	}
 	defer file.Close()
 
 	content, err := io.ReadAll(file)
 	if err != nil {
-		return logging.LogAndReturnError("Could not read the file", err)
+		return fmt.Errorf("load migration from file: %w", err)
 	}
 
 	// Split the file content by "-- Migration Down"
 	parts := strings.Split(string(content), "-- Migration Down")
 	if len(parts) != 2 {
-		return logging.LogAndReturnError("Invalid migration file format", nil)
+		return fmt.Errorf("load migration from file: invalid migration file format: %s", filePath)
 	}
 
 	upPart := strings.TrimSpace(strings.Replace(parts[0], "-- Migration Up", "", 1))

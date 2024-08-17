@@ -2,32 +2,34 @@ package migration
 
 import (
 	"database/sql"
-	"go-mailing/internal/app/logging"
+	"fmt"
 )
-
-var log = logging.GetLogger()
 
 func MigrateUp(db *sql.DB) error {
 	// Track if any migration was applied
 	migrationsApplied := false
 
 	for _, m := range Migrations {
-		if !isMigrationApplied(db, m.ID) {
+		condition, err := isMigrationApplied(db, m.ID)
+		if err != nil {
+			return fmt.Errorf("migrate up: %w", err)
+		}
+		if !condition {
 			if _, err := db.Exec(m.Up); err != nil {
-				return logging.LogAndReturnError("Failed to apply migration", err)
+				return fmt.Errorf("migrate up: %w", err)
 			}
 			if err := markMigrationApplied(db, m.ID); err != nil {
-				return logging.LogAndReturnError("Failed to mark migration as applied", err)
+				return fmt.Errorf("migrate up: %w", err)
 			}
 			// Log once after successful migration
-			log.Infof("Successfully applied migration: %s", m.ID)
+			fmt.Printf("Successfully applied migration: %s\n", m.ID)
 			migrationsApplied = true
 		}
 	}
 
 	if !migrationsApplied {
 		// If no migrations were applied and no error occurred, it means we are already at the latest version
-		log.Info("Database is already at the latest version.")
+		fmt.Println("Database is already at the latest version or all migrations are already applied.")
 	}
 
 	return nil
@@ -38,22 +40,26 @@ func MigrateUpByNumber(db *sql.DB, number int) error {
 
 	for i := 0; i < number; i++ {
 		m := Migrations[i]
-		if !isMigrationApplied(db, m.ID) {
+		condition, err := isMigrationApplied(db, m.ID)
+		if err != nil {
+			return fmt.Errorf("migrate up by number: %w", err)
+		}
+		if !condition {
 			if _, err := db.Exec(m.Up); err != nil {
-				return logging.LogAndReturnError("Failed to apply migration", err)
+				return fmt.Errorf("migrate up by number: %w", err)
 			}
 			if err := markMigrationApplied(db, m.ID); err != nil {
-				return logging.LogAndReturnError("Failed to mark migration as applied", err)
+				return fmt.Errorf("migrate up by number: %w", err)
 			}
 			// Log once after successful migration
-			log.Infof("Successfully applied migration: %s", m.ID)
+			fmt.Printf("Successfully applied migration: %s\n", m.ID)
 			migrationsApplied = true
 		}
 	}
 
 	if !migrationsApplied {
 		// If no migrations were applied, it means we are already at the latest version
-		log.Info("Database is already at the latest version or all specified migrations are already applied.")
+		fmt.Println("Database is already at the latest version or all migrations are already applied.")
 	}
 
 	return nil
@@ -62,15 +68,19 @@ func MigrateUpByNumber(db *sql.DB, number int) error {
 func MigrateDown(db *sql.DB) error {
 	for i := len(Migrations) - 1; i >= 0; i-- {
 		m := Migrations[i]
-		if isMigrationApplied(db, m.ID) {
+		condition, err := isMigrationApplied(db, m.ID)
+		if err != nil {
+			return fmt.Errorf("migrate down: %w", err)
+		}
+		if !condition {
 			if _, err := db.Exec(m.Down); err != nil {
-				return logging.LogAndReturnError("Failed to rollback migration", err)
+				return fmt.Errorf("migrate down: %w", err)
 			}
 			if err := unmarkMigrationApplied(db, m.ID); err != nil {
-				return logging.LogAndReturnError("Failed to unmark migration", err)
+				return fmt.Errorf("migrate down: %w", err)
 			}
 			// Log once after successful rollback
-			log.Infof("Successfully rolled back migration: %s", m.ID)
+			fmt.Printf("Successfully rolled back migration: %s\n", m.ID)
 		}
 	}
 	return nil
@@ -79,15 +89,19 @@ func MigrateDown(db *sql.DB) error {
 func MigrateDownByNumber(db *sql.DB, number int) error {
 	for i := 0; i < number; i++ {
 		m := Migrations[len(Migrations)-1-i]
-		if isMigrationApplied(db, m.ID) {
+		condition, err := isMigrationApplied(db, m.ID)
+		if err != nil {
+			return fmt.Errorf("migrate down by number: %w", err)
+		}
+		if !condition {
 			if _, err := db.Exec(m.Down); err != nil {
-				return logging.LogAndReturnError("Failed to rollback migration", err)
+				return fmt.Errorf("migrate down by number: %w", err)
 			}
 			if err := unmarkMigrationApplied(db, m.ID); err != nil {
-				return logging.LogAndReturnError("Failed to unmark migration", err)
+				return fmt.Errorf("migrate down by number: %w", err)
 			}
 			// Log once after successful rollback
-			log.Infof("Successfully rolled back migration: %s", m.ID)
+			fmt.Printf("Successfully rolled back migration: %s\n", m.ID)
 		}
 	}
 	return nil
@@ -98,7 +112,7 @@ func CurrentVersion(db *sql.DB) (int, error) {
 	query := `SELECT COUNT(*) FROM migrations`
 	err := db.QueryRow(query).Scan(&version)
 	if err != nil {
-		return 0, logging.LogAndReturnError("Could not get current version", err)
+		return 0, fmt.Errorf("current version: %w", err)
 	}
 	return version, nil
 }

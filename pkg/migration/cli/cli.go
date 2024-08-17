@@ -2,15 +2,19 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"go-mailing/internal/app/database"
-	"go-mailing/internal/app/logging"
 	"go-mailing/pkg/migration"
 )
 
 // Run executes the migration CLI
 func main() {
-	log := logging.GetLogger()
+	if err := RunMigrationCLI(); err != nil {
+		fmt.Println(err)
+	}
+}
 
+func RunMigrationCLI() error {
 	var action string
 	flag.StringVar(&action, "action", "migrate-up", "Action to perform: migrate-up, migrate-up-by-number, migrate-down, migrate-down-by-number, current-version")
 	var number int
@@ -21,57 +25,49 @@ func main() {
 
 	db, err := database.Open(database.DefultPostgresConfig())
 	if err != nil {
-		log.WithError(err).Fatal("Could not open database")
-		return
+		return fmt.Errorf("could not open database: %w", err)
 	}
 
 	err = migration.LoadMigrationsFromDir(flag.Lookup("path").Value.String())
 	if err != nil {
-		log.WithError(err).Fatal("Could not load migrations")
-		return
+		return fmt.Errorf("could not load migrations: %w", err)
 	}
 
 	// Ensure the migrations table exists
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS migrations (id VARCHAR(255) PRIMARY KEY)`)
 	if err != nil {
-		log.WithError(err).Fatal("Could not create migrations table")
-		return
+		return fmt.Errorf("could not create migrations table: %w", err)
 	}
 
 	switch action {
 	case "migrate-up":
 		err = migration.MigrateUp(db)
 		if err != nil {
-			log.WithError(err).Fatal("Could not apply migrations")
-			return
+			return fmt.Errorf("could not apply migrations: %w", err)
 		}
 	case "migrate-up-by-number":
 		err = migration.MigrateUpByNumber(db, number)
 		if err != nil {
-			log.WithError(err).Fatal("Could not apply migrations")
-			return
+			return fmt.Errorf("could not apply migrations: %w", err)
 		}
 	case "migrate-down":
 		err = migration.MigrateDown(db)
 		if err != nil {
-			log.WithError(err).Fatal("Could not rollback migrations")
-			return
+			return fmt.Errorf("could not rollback migrations: %w", err)
 		}
 	case "migrate-down-by-number":
 		err = migration.MigrateDownByNumber(db, number)
 		if err != nil {
-			log.WithError(err).Fatal("Could not rollback migration")
-			return
+			return fmt.Errorf("could not rollback migrations: %w", err)
 		}
 	case "current-version":
 		version, err := migration.CurrentVersion(db)
 		if err != nil {
-			log.WithError(err).Fatal("Could not get current version")
-			return
+			return fmt.Errorf("could not get current version: %w", err)
 		}
-		log.Infof("Current version: %d", version)
+		fmt.Printf("Current version: %d\n", version)
 	default:
-		log.WithError(err).Fatal("Invalid action")
-		return
+		return fmt.Errorf("invalid action: %s", action)
 	}
+	return nil
 }

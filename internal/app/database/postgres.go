@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"go-mailing/internal/app/logging"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -38,15 +37,14 @@ func (cfg PostgresConfig) String() string {
 // It attempts to establish a connection and verify it with a ping.
 // Caller must ensure that the connection is closed via db.Close() method.
 func Open(cfg PostgresConfig) (*sql.DB, error) {
-	log := logging.GetLogger()
 	db, err := sql.Open("pgx", cfg.String())
 	if err != nil {
-		log.WithError(err).Fatal("Open: could not open database")
+		fmt.Println("Open: could not open database")
 		return nil, err
 	}
 	err = db.Ping()
 	if err != nil {
-		log.WithError(err).Fatal("Open: could not ping database")
+		fmt.Println("Open: could not ping database")
 		return nil, err
 	}
 	return db, nil

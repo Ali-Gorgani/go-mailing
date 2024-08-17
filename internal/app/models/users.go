@@ -2,7 +2,7 @@ package models
 
 import (
 	"database/sql"
-	"go-mailing/internal/app/logging"
+	"fmt"
 	"go-mailing/internal/app/utils"
 	"strings"
 	"time"
@@ -31,7 +31,7 @@ func (service *UserService) CreateUser(arg CreateUserParam) (CreateUserResponse,
 
 	hashedPassword, err := utils.HashPassword(arg.Password)
 	if err != nil {
-		return CreateUserResponse{}, logging.LogAndReturnError("Create User", err)
+		return CreateUserResponse{}, fmt.Errorf("create user: %w", err)
 	}
 	var id int
 	row := service.DB.QueryRow(`
@@ -39,7 +39,7 @@ func (service *UserService) CreateUser(arg CreateUserParam) (CreateUserResponse,
 		VALUES ($1, $2, $3) RETURNING id;`, arg.Username, hashedPassword, arg.Email)
 	err = row.Scan(&id)
 	if err != nil {
-		return CreateUserResponse{}, logging.LogAndReturnError("create user", err)
+		return CreateUserResponse{}, fmt.Errorf("create user: %w", err)
 	}
 
 	// Create the response
@@ -67,12 +67,12 @@ func (service *UserService) SignIn(args SignInParam) (CreateUserResponse, error)
 		WHERE username = $1;`, args.Username)
 	err := row.Scan(&user.ID, &user.Username, &user.HashedPassword, &user.Email, &user.CreatedAt)
 	if err != nil {
-		return CreateUserResponse{}, logging.LogAndReturnError("sign in", err)
+		return CreateUserResponse{}, fmt.Errorf("sign in: %w", err)
 	}
 
 	err = utils.ComparePassword(user.HashedPassword, args.Password)
 	if err != nil {
-		return CreateUserResponse{}, logging.LogAndReturnError("sign in", err)
+		return CreateUserResponse{}, fmt.Errorf("sign in: %w", err)
 	}
 
 	return user, nil
