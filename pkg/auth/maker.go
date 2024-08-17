@@ -4,3 +4,4 @@ type Maker interface {
 	CreateToken()
 	VerifyToken()
 }
+
