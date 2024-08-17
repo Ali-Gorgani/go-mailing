@@ -1,0 +1,196 @@
+openapi: 3.0.0
+info:
+  title: Go Mailing API
+  description: API for managing user accounts and SMS operations.
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+    description: Production server
+  - url: http://localhost:8080
+    description: Development server
+
+paths:
+  /signup:
+    post:
+      summary: Sign Up a new user
+      operationId: signUp
+      requestBody:
+        description: User registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                password:
+                  type: string
+                  example: password123
+                email:
+                  type: string
+                  example: johndoe@example.com
+      responses:
+        '200':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "123"
+                  username:
+                    type: string
+                    example: johndoe
+                  email:
+                    type: string
+                    example: johndoe@example.com
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: "2023-01-01T00:00:00Z"
+        '400':
+          description: Bad request, invalid input
+        '409':
+          description: Conflict, username or email already exists
+        '500':
+          description: Internal server error
+
+  /signin:
+    post:
+      summary: Sign In an existing user
+      operationId: signIn
+      requestBody:
+        description: User login details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                password:
+                  type: string
+                  example: password123
+      responses:
+        '200':
+          description: User successfully signed in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "123"
+                      username:
+                        type: string
+                        example: johndoe
+                      email:
+                        type: string
+                        example: johndoe@example.com
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: "2023-01-01T00:00:00Z"
+        '400':
+          description: Bad request, invalid input
+        '401':
+          description: Unauthorized, invalid credentials
+        '500':
+          description: Internal server error
+
+  /user/give-providers:
+    get:
+      summary: Get SMS providers
+      operationId: getSmsProviders
+      responses:
+        '200':
+          description: List of SMS providers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: ["Provider1", "Provider2"]
+        '500':
+          description: Internal server error
+
+  /user/post-sms:
+    post:
+      summary: Post SMS
+      operationId: postSms
+      requestBody:
+        description: SMS details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipient:
+                  type: string
+                  example: "+1234567890"
+                message:
+                  type: string
+                  example: "Hello, this is a test message."
+      responses:
+        '200':
+          description: SMS successfully posted
+        '400':
+          description: Bad request, invalid input
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    SignUpRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+
+    SignUpResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    SignInRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    SignInResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/SignUpResponse'
