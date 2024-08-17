@@ -32,7 +32,7 @@ paths:
                   type: string
                   example: johndoe@example.com
       responses:
-        '200':
+        "200":
           description: User successfully registered
           content:
             application/json:
@@ -52,11 +52,11 @@ paths:
                     type: string
                     format: date-time
                     example: "2023-01-01T00:00:00Z"
-        '400':
+        "400":
           description: Bad request, invalid input
-        '409':
+        "409":
           description: Conflict, username or email already exists
-        '500':
+        "500":
           description: Internal server error
 
   /signin:
@@ -78,7 +78,7 @@ paths:
                   type: string
                   example: password123
       responses:
-        '200':
+        "200":
           description: User successfully signed in
           content:
             application/json:
@@ -104,11 +104,11 @@ paths:
                         type: string
                         format: date-time
                         example: "2023-01-01T00:00:00Z"
-        '400':
+        "400":
           description: Bad request, invalid input
-        '401':
+        "401":
           description: Unauthorized, invalid credentials
-        '500':
+        "500":
           description: Internal server error
 
   /user/give-providers:
@@ -116,7 +116,7 @@ paths:
       summary: Get SMS providers
       operationId: getSmsProviders
       responses:
-        '200':
+        "200":
           description: List of SMS providers
           content:
             application/json:
@@ -125,7 +125,7 @@ paths:
                 items:
                   type: string
                   example: ["Provider1", "Provider2"]
-        '500':
+        "500":
           description: Internal server error
 
   /user/post-sms:
@@ -147,11 +147,11 @@ paths:
                   type: string
                   example: "Hello, this is a test message."
       responses:
-        '200':
+        "200":
           description: SMS successfully posted
-        '400':
+        "400":
           description: Bad request, invalid input
-        '500':
+        "500":
           description: Internal server error
 
 components:
@@ -193,4 +193,4 @@ components:
         token:
           type: string
         user:
-          $ref: '#/components/schemas/SignUpResponse'
+          $ref: "#/components/schemas/SignUpResponse"
