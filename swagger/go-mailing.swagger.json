@@ -10,108 +10,165 @@
     }
   },
   "paths": {
-    "/get_providers": {
-      "get": {
-        "summary": "Get email providers",
-        "description": "API to retrieve a list of available email providers.",
-        "operationId": "GoMailing_GetProviders",
-        "responses": {
-          "200": {
-            "description": "Providers retrieved successfully.",
-            "schema": {
-              "$ref": "#/definitions/GetProvidersResponse"
-            }
-          },
-          "default": {
-            "description": "An error occurred.",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          }
-        },
-        "tags": ["GoMailing"]
-      }
-    },
-
-    "/send_mail": {
+    "/signup": {
       "post": {
-        "summary": "Send an email",
-        "description": "API to send an email using the configured provider.",
-        "operationId": "GoMailing_SendEmail",
-        "responses": {
-          "200": {
-            "description": "Email sent successfully.",
-            "schema": {
-              "$ref": "#/definitions/SendEmailResponse"
-            }
-          },
-          "default": {
-            "description": "An error occurred.",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          }
-        },
+        "summary": "Sign up",
+        "description": "Sign up a new user",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "description": "User information for sign up",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/SendEmailRequest"
+              "$ref": "#/definitions/SignUpRequest"
             }
           }
         ],
-        "tags": ["GoMailing"]
-      }
-    }
-  },
-
-  "definitions": {
-    "GetProvidersResponse": {
-      "type": "object",
-      "properties": {
-        "providers": {
-          "type": "array",
-          "items": {
-            "type": "string"
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SendCreateUserResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
     },
-    "SendEmailRequest": {
+    "/signin": {
+      "post": {
+        "summary": "Sign in",
+        "description": "Sign in a user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "User information for sign in",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SignInRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SendSignInResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "SignUpRequest": {
       "type": "object",
       "properties": {
-        "provider": {
+        "username": {
           "type": "string"
         },
-        "receptor": {
+        "password": {
           "type": "string"
         },
-        "message": {
+        "email": {
           "type": "string"
+        }
+      },
+      "required": ["username", "password", "email"]
+    },
+    "SignInRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": ["username", "password"]
+    },
+    "SendCreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "timestamp",
+          "format": "date-time"
         }
       }
     },
-    "SendEmailResponse": {
+    "SendSignInResponse": {
       "type": "object",
       "properties": {
-        "status": {
+        "token": {
           "type": "string"
         },
-        "message": {
-          "type": "string"
+        "user": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "username": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "timestamp",
+              "format": "date-time"
+            }
+          }
         }
       }
     },
     "ErrorResponse": {
       "type": "object",
       "properties": {
-        "code": {
-          "type": "integer"
-        },
         "message": {
-          "type": "string"
+          "type": "string",
+          "description": "Error message"
         }
       }
     }

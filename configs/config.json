@@ -1,0 +1,12 @@
+{
+  "kavenegar": {
+    "sender": "10008663",
+    "url": "https://api.kavenegar.com",
+    "api_key": "566346566C492F4E682F703148745135506948744F43515234586247586C4373755A7445746E704D7766383D"
+  },
+  "server": {
+    "environment": "development",
+    "address": ":3000",
+    "loadbalancer_addresses": [":3001", ":3002"]
+  }
+}
