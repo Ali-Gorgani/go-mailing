@@ -36,12 +36,33 @@
             "description": "Bad Request",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Invalid query parameters."
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Username or email already exists."
+              }
             }
           },
           "500": {
             "description": "Internal Server Error",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Internal Server Error."
+              }
             }
           }
         }
@@ -73,18 +94,33 @@
             "description": "Bad Request",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Invalid query parameters."
+              }
             }
           },
           "401": {
             "description": "Unauthorized",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Invalid username or password."
+              }
             }
           },
           "500": {
             "description": "Internal Server Error",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Internal Server Error."
+              }
             }
           }
         }
@@ -132,7 +168,7 @@
           "type": "string"
         },
         "created_at": {
-          "type": "timestamp",
+          "type": "string",
           "format": "date-time"
         }
       }
@@ -156,7 +192,7 @@
               "type": "string"
             },
             "created_at": {
-              "type": "timestamp",
+              "type": "string",
               "format": "date-time"
             }
           }

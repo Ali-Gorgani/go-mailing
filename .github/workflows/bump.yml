@@ -24,7 +24,7 @@ jobs:
         with:
           doc: go-mailing
           token: XRQByFxnTkTxceivNGaLe7QQQZA1ESfM
-          file: doc/api-documentation.yml
+          file: swagger/go-mailing.swagger.json
   api-diff:
     if: ${{ github.event_name == 'pull_request' }}
     name: Check API diff on Bump.sh
@@ -37,7 +37,7 @@ jobs:
         with:
           doc: go-mailing
           token: XRQByFxnTkTxceivNGaLe7QQQZA1ESfM
-          file: doc/api-documentation.yml
+          file: swagger/go-mailing.swagger.json
           command: diff
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

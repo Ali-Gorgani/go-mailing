@@ -88,7 +88,7 @@ func (controller *UserController) SignIn(ctx echo.Context) error {
 	if err != nil {
 		if strings.Contains(err.Error(), "no rows in result set") {
 			controller.Log.Errorf("SignIn: %v", err)
-			return ctx.String(http.StatusUnauthorized, "Unauthorized")
+			return ctx.String(http.StatusUnauthorized, "Invalid username or password.")
 		}
 		controller.Log.Errorf("SignIn: %v", err)
 		return ctx.String(http.StatusInternalServerError, "Internal Server Error")
