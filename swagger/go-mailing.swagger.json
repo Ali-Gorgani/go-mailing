@@ -9,6 +9,16 @@
       "email": "maniwolf600@gmail.com"
     }
   },
+  "servers": [
+      {
+        "url": "https://api.example.com",
+        "description": "Production server"
+      },
+      {
+        "url": "http://localhost:3000",
+        "description": "Development server"
+      }
+    ],
   "paths": {
     "/signup": {
       "post": {
