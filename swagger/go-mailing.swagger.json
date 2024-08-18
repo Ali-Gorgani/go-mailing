@@ -10,16 +10,13 @@
       "email": "maniwolf600@gmail.com"
     }
   },
-  "servers": [
-      {
-        "url": "https://api.example.com",
-        "description": "Production server"
-      },
-      {
-        "url": "http://localhost:3000",
-        "description": "Development server"
-      }
-    ],
+  "securityDefinitions": {
+    "jwt": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "paths": {
     "/signup": {
       "post": {
