@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.0",
+  "swagger": "2.0",
   "info": {
     "title": "Go Mailing API",
     "description": "API for managing user accounts and SMS operations.",
