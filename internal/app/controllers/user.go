@@ -136,8 +136,17 @@ func (controller *UserController) SignIn(ctx echo.Context) error {
 }
 
 func (controller *UserController) SignOut(ctx echo.Context) error {
-	// TODO: Destroy the JWT session
-	return nil
+	payload, ok := ctx.Get("authorization_payload").(*auth.Payload)
+	if !ok {
+		controller.Log.Error("SignOut: unable to extract payload from context")
+		return ctx.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+	err := controller.SessionService.DeleteSession(ctx.Request().Context(), payload.ID)
+	if err != nil {
+		controller.Log.Errorf("SignOut: %v", err)
+		return ctx.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+	return ctx.JSON(http.StatusOK, map[string]string{"message": "Successfully signed out"})
 }
 
 func (controller *UserController) UserInfo(ctx echo.Context) error {

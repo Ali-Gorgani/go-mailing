@@ -52,3 +52,21 @@ func (service *SessionService) GetSessionByToken(ctx context.Context, token stri
 	}
 	return s, nil
 }
+
+func (service *SessionService) InvalidateSession(ctx context.Context, sessionID uuid.UUID) error {
+	_, err := service.DB.Exec(`
+		UPDATE sessions SET is_blocked = true WHERE id = $1;`, sessionID)
+	if err != nil {
+		return fmt.Errorf("invalidate session: %w", err)
+	}
+	return nil
+}
+
+func (service *SessionService) DeleteSession(ctx context.Context, sessionID uuid.UUID) error {
+	_, err := service.DB.Exec(`
+		DELETE FROM sessions WHERE id = $1;`, sessionID)
+	if err != nil {
+		return fmt.Errorf("delete session: %w", err)
+	}
+	return nil
+}

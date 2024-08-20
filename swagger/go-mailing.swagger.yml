@@ -171,6 +171,34 @@ paths:
                 application/json:
                   value:
                     message: Internal Server Error.
+  
+  /user/signout:
+    post:
+      summary: Sign out
+      description: Sign out a user
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                application/json:
+                  value:
+                    message: User signed out.
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                application/json:
+                  value:
+                    message: Internal Server Error.
+      security:
+        - jwt: []
 
   /user/{username}:
     get:

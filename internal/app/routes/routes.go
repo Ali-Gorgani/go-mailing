@@ -52,10 +52,10 @@ func NewRouter(db *sql.DB, log *logrus.Logger, cfg configs.Config) *echo.Echo {
 
 	e.POST("/signup", userC.SignUp)
 	e.POST("/signin", userC.SignIn)
-	e.POST("/signout", userC.SignOut)
 
 	userGroup := e.Group("/user")
 	userGroup.Use(authMiddleware.Handle)
+	userGroup.POST("/signout", userC.SignOut)
 	userGroup.GET("/:username", userC.UserInfo)
 	userGroup.GET("/give-providers", smsC.GiveProviders)
 	userGroup.POST("/post-sms", smsC.PostSMS)

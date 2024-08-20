@@ -42,6 +42,14 @@ func (amw *AuthMiddleware) Handle(next echo.HandlerFunc) echo.HandlerFunc {
 		if err != nil {
 			return ctx.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid or expired access token"})
 		}
+		
+		session, err := amw.SessionService.GetSessionByToken(ctx.Request().Context(), accessToken)
+		if err != nil {
+			return ctx.JSON(http.StatusUnauthorized, map[string]string{"error": "session not found"})
+		}
+		if session.IsBlocked {
+			return ctx.JSON(http.StatusUnauthorized, map[string]string{"error": "session is blocked"})
+		}
 
 		ctx.Set(authorizationPayloadKey, payload)
 		return next(ctx)
