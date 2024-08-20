@@ -3,6 +3,7 @@ module go-mailing
 go 1.22.6
 
 require (
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/jackc/pgx/v5 v5.6.0
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/sirupsen/logrus v1.9.3
@@ -11,9 +12,7 @@ require (
 )
 
 require (
-	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
-	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

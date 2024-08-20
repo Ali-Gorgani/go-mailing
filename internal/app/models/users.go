@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"go-mailing/internal/app/utils"
@@ -54,23 +55,13 @@ func (service *UserService) CreateUser(arg CreateUserParam) (CreateUserResponse,
 	return response, nil
 }
 
-type SignInParam struct {
-	Username string `query:"username"`
-	Password string `query:"password"`
-}
-
-func (service *UserService) SignIn(args SignInParam) (CreateUserResponse, error) {
+func (service *UserService) GetUser(username string) (CreateUserResponse, error) {
 	var user CreateUserResponse
 	row := service.DB.QueryRow(`
 		SELECT id, username, hashed_password, email, created_at 
 		FROM users 
-		WHERE username = $1;`, args.Username)
+		WHERE username = $1;`, username)
 	err := row.Scan(&user.ID, &user.Username, &user.HashedPassword, &user.Email, &user.CreatedAt)
-	if err != nil {
-		return CreateUserResponse{}, fmt.Errorf("sign in: %w", err)
-	}
-
-	err = utils.ComparePassword(user.HashedPassword, args.Password)
 	if err != nil {
 		return CreateUserResponse{}, fmt.Errorf("sign in: %w", err)
 	}
@@ -84,4 +75,22 @@ func (service *UserService) Update() {
 
 func (service *UserService) Delete() {
 	// ...
+}
+
+type SignInParam struct {
+	Username string `query:"username"`
+	Password string `query:"password"`
+}
+
+func (service *UserService) SignIn(ctx context.Context, args SignInParam) (CreateUserResponse, error) {
+	user, err := service.GetUser(args.Username)
+	if err != nil {
+		return CreateUserResponse{}, fmt.Errorf("sign in: %w", err)
+	}
+	err = utils.ComparePassword(user.HashedPassword, args.Password)
+	if err != nil {
+		return CreateUserResponse{}, fmt.Errorf("sign in: %w", err)
+	}
+
+	return user, nil
 }

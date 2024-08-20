@@ -1,0 +1,23 @@
+{
+  "kavenegar": {
+    "sender": "10008663",
+    "url": "https://api.kavenegar.com",
+    "api_key": "566346566C492F4E682F703148745135506948744F43515234586247586C4373755A7445746E704D7766383D"
+  },
+  "server": {
+    "environment": "development",
+    "address": ":3000"
+  },
+  "db": {
+    "host": "localhost",
+    "port": "5432",
+    "user": "root",
+    "password": "secret",
+    "database": "go-mailing",
+    "sslmode": "disable"
+  },
+  "access_token": {
+    "secret_key": "vSAHhahNnKNgRZqNEUCqlb4AfriKrzqT",
+    "duration": "15m"
+  }
+}

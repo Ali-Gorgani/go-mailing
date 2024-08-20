@@ -72,7 +72,7 @@ func MigrateDown(db *sql.DB) error {
 		if err != nil {
 			return fmt.Errorf("migrate down: %w", err)
 		}
-		if !condition {
+		if condition {
 			if _, err := db.Exec(m.Down); err != nil {
 				return fmt.Errorf("migrate down: %w", err)
 			}
@@ -93,7 +93,7 @@ func MigrateDownByNumber(db *sql.DB, number int) error {
 		if err != nil {
 			return fmt.Errorf("migrate down by number: %w", err)
 		}
-		if !condition {
+		if condition {
 			if _, err := db.Exec(m.Down); err != nil {
 				return fmt.Errorf("migrate down by number: %w", err)
 			}

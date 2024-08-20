@@ -21,7 +21,18 @@ func StartServer() error {
 	log := logging.LoggingSetup(cfg)
 
 	// Set up the database
-	db, err := database.Open(database.DefultPostgresConfig())
+	dbConfig := database.PostgresConfig{
+		Host:     cfg.DB.Host,
+		Port:     cfg.DB.Port,
+		User:     cfg.DB.User,
+		Password: cfg.DB.Password,
+		Database: cfg.DB.Database,
+		SSLMode:  cfg.DB.SSLMode,
+	}
+	if dbConfig.Host == "" || dbConfig.Port == "" {
+		dbConfig = database.DefultPostgresConfig()
+	}
+	db, err := database.Open(dbConfig)
 	if err != nil {
 		log.Fatalf("Could not open database: %v", err)
 		return err
@@ -29,7 +40,7 @@ func StartServer() error {
 	defer db.Close()
 
 	// Set up the routes
-	e := routes.NewRouter(db, log)
+	e := routes.NewRouter(db, log, cfg)
 
 	// Start server
 	log.Infof("Starting server on %s", cfg.Server.Address)

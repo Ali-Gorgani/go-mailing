@@ -11,6 +11,7 @@ import (
 var (
 	ErrExpiredToken = errors.New("token is expired")
 	ErrInvalidToken = errors.New("token is invalid")
+
 )
 
 type Payload struct {
@@ -35,3 +36,12 @@ func NewPayload(username, role string, Duration time.Duration) (*Payload, error)
 	}
 	return payload, nil
 }
+
+func (p *Payload) Valid() error {
+	if time.Now().After(p.ExpiredAt) {
+		return ErrExpiredToken
+	}
+	return nil
+}
+
+

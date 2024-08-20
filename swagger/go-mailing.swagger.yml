@@ -1,0 +1,214 @@
+openapi: 3.0.0
+info:
+  title: Go Mailing API
+  description: API for managing user accounts and SMS operations.
+  version: "1.0"
+  contact:
+    name: Ali.G
+    url: https://github.com/Ali-Gorgani
+    email: maniwolf600@gmail.com
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Bearer token authentication
+  schemas:
+    SignUpRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+      required:
+        - username
+        - password
+        - email
+    SignInRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+    SendCreateUserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    SendSignInResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+            email:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+paths:
+  /signup:
+    post:
+      summary: Sign up
+      description: Sign up a new user
+      requestBody:
+        description: User information for sign up
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpRequest"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendCreateUserResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                application/json:
+                  value:
+                    message: Invalid query parameters.
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                application/json:
+                  value:
+                    message: Username or email already exists.
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                application/json:
+                  value:
+                    message: Internal Server Error.
+
+  /signin:
+    post:
+      summary: Sign in
+      description: Sign in a user
+      requestBody:
+        description: User information for sign in
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInRequest"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendSignInResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                application/json:
+                  value:
+                    message: Invalid query parameters.
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                application/json:
+                  value:
+                    message: Invalid username or password.
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                application/json:
+                  value:
+                    message: Internal Server Error.
+
+  /user/{username}:
+    get:
+      summary: Get user by username
+      description: Get user information by username
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username of the user
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendCreateUserResponse"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                application/json:
+                  value:
+                    message: User not found.
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                application/json:
+                  value:
+                    message: Internal Server Error.
+      security:
+        - jwt: []
