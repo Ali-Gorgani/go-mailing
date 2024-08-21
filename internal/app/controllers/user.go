@@ -24,7 +24,7 @@ type UserController struct {
 
 type SignUpRequest struct {
 	Username string `json:"username" validate:"required,min=3,max=32"`
-	Password string `validate:"required,password"`
+	Password string `json:"password" validate:"required,password"`
 	Email    string `json:"email" validate:"required,email"`
 }
 
