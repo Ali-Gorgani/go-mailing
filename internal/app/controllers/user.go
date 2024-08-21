@@ -42,8 +42,8 @@ func (controller *UserController) SignUp(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "Invalid query parameters")
 	}
 
-	validation := validation.NewValidator()
-	if err := validation.Validate(request); err != nil {
+	validator := validation.NewValidator()
+	if err := validator.Validate(request); err != nil {
 		controller.Log.Errorf("SignUp: %v", err)
 		return ctx.String(http.StatusBadRequest, err.Error())
 	}
@@ -91,8 +91,8 @@ func (controller *UserController) SignIn(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "Invalid query parameters")
 	}
 
-	validation := validation.NewValidator()
-	if err := validation.Validate(request); err != nil {
+	validator := validation.NewValidator()
+	if err := validator.Validate(request); err != nil {
 		controller.Log.Errorf("SignIn: %v", err)
 		return ctx.String(http.StatusBadRequest, err.Error())
 	}
