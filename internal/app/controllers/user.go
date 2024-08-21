@@ -3,6 +3,7 @@ package controllers
 import (
 	"go-mailing/configs"
 	"go-mailing/internal/app/models"
+	"go-mailing/internal/app/validation"
 	"go-mailing/pkg/auth"
 	"net/http"
 	"strings"
@@ -22,9 +23,9 @@ type UserController struct {
 }
 
 type SignUpRequest struct {
-	Username string `query:"username" validate:"required"`
-	Password string `query:"password" validate:"required"`
-	Email    string `query:"email" validate:"required,email"`
+	Username string `json:"username" validate:"required,min=3,max=32"`
+	Password string `validate:"required,password"`
+	Email    string `json:"email" validate:"required,email"`
 }
 
 type SignUpResponse struct {
@@ -41,7 +42,11 @@ func (controller *UserController) SignUp(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "Invalid query parameters")
 	}
 
-	// TODO: Validate the request
+	validation := validation.NewValidator()
+	if err := validation.Validate(request); err != nil {
+		controller.Log.Errorf("SignUp: %v", err)
+		return ctx.String(http.StatusBadRequest, err.Error())
+	}
 
 	userParam := models.CreateUserParam{
 		Username: request.Username,
@@ -67,8 +72,8 @@ func (controller *UserController) SignUp(ctx echo.Context) error {
 }
 
 type SignInRequest struct {
-	Username string `query:"username" validate:"required"`
-	Password string `query:"password" validate:"required"`
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type SignInResponse struct {
@@ -86,7 +91,11 @@ func (controller *UserController) SignIn(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "Invalid query parameters")
 	}
 
-	// TODO: Validate the request
+	validation := validation.NewValidator()
+	if err := validation.Validate(request); err != nil {
+		controller.Log.Errorf("SignIn: %v", err)
+		return ctx.String(http.StatusBadRequest, err.Error())
+	}
 
 	signinParam := models.SignInParam{
 		Username: request.Username,
@@ -102,7 +111,6 @@ func (controller *UserController) SignIn(ctx echo.Context) error {
 		return ctx.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	// TODO: Implement the session with JWT
 	token, payload, err := controller.TokenMaker.CreateToken(user.Username, "user", controller.Config.AccessToken.Duration)
 	if err != nil {
 		controller.Log.Errorf("SignIn: %v", err)
