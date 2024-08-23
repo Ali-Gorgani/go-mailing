@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"go-mailing/pkg/kavenegar"
+	"go-mailing/cmd/goMailing"
 )
 
 func main() {
-	kn := kavenegar.New("566346566C492F4E682F703148745135506948744F43515234586247586C4373755A7445746E704D7766383D")
+	// kn := kavenegar.New("566346566C492F4E682F703148745135506948744F43515234586247586C4373755A7445746E704D7766383D")
 
 	// output, err := kn.Send(kavenegar.SendInputParams{
 	// 	Receptor: []string{"09114418131"},
@@ -33,17 +32,15 @@ func main() {
 	// 	IsRead: 0,
 	// })
 
-	output, err := kn.Info()
+	// output, err := kn.Info()
 
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(output)
-
-	// err = goMailing.StartServer()
 	// if err != nil {
 	// 	panic(err)
 	// }
+	// fmt.Println(output)
+
+	err := goMailing.StartServer()
+	if err != nil {
+		panic(err)
+	}
 }
-
-
